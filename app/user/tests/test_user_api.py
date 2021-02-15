@@ -40,7 +40,7 @@ class PublicUserApiTest(TestCase):
 
     def test_password_too_short(self):
         """Test that the password must be more than 8 characters"""
-        payload = {'email': 'test@g-kon.net', 'password':'pw', 'name':'Test'}
+        payload = {'email': 'test@g-kon.net', 'password': 'pw', 'name': 'Test'}
         res = self.client.post(CREATE_USER_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         user_exists = get_user_model()\
@@ -51,13 +51,15 @@ class PublicUserApiTest(TestCase):
     def test_create_token_for_user(self):
         """Test that a token is created for the user"""
         payload = {
-            'email': 'test1@g-kon.net',
+            'email': 'test45@g-kon.net',
+            'password': 'testpass123',
+            'name': 'Test',
+        }
+        create_user(**payload)
+        payload = {
+            'email': 'test45@g-kon.net',
             'password': 'testpass123',
         }
-
-        res = self.client.post(CREATE_USER_URL, payload)
-        create_user(**payload)
-        # print(res.data)
         res = self.client.post(TOKEN_URL, payload)
 
         self.assertIn('token', res.data)
@@ -74,7 +76,7 @@ class PublicUserApiTest(TestCase):
 
     def test_create_token_no_user(self):
         """Test that token is not created if user doesn't exist"""
-        payload = {'email':'test@g-kon.net', 'password': 'testpass123', 'name': 'Test'}
+        payload = {'email': 'test@g-kon.net', 'password': 'testpass123', 'name': 'Test'}
         res = self.client.post(TOKEN_URL, payload)
 
         self.assertNotIn('token', res.data)
